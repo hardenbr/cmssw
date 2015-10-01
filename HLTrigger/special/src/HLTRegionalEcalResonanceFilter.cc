@@ -547,11 +547,9 @@ bool HLTRegionalEcalResonanceFilter::filter(edm::Event& iEvent, const edm::Event
   
   //Put selected information in the event
   int ee_collsize = selEERecHitCollection->size();
-  
-  if( eb_collsize < 2 && ee_collsize <2)     
-    return false; 
-  
-  ////Now put into events selected rechits.
+    
+  // Now put into events selected rechits.
+  // Still put the  collection even if it is empty
   if(doSelBarrel_){
     iEvent.put( selEBRecHitCollection, BarrelHits_);
   }  
@@ -561,9 +559,14 @@ bool HLTRegionalEcalResonanceFilter::filter(edm::Event& iEvent, const edm::Event
       iEvent.put( selESRecHitCollection, ESHits_);
     }
   }
+
+  // return false after the put statement
+  // if pi0EB keeps and event and pi0EE does not
+  // then this prevents no collection existing for the event.
+  // The collection will be empty, but wil not throw and exception.
+  if( eb_collsize < 2 && ee_collsize <2)  return false; 
   
-  return true; 
-    
+  return true;     
   
 }
 
